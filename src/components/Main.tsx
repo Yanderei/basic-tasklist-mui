@@ -7,7 +7,10 @@ import ListIcon from "@mui/icons-material/List";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import { blue, green, lightGreen } from "@mui/material/colors";
 import { Button } from "@mui/material";
-import { AddTask } from "./AddTask";
+import AddTask from "./AddTask";
+import DashboardIcon from '@mui/icons-material/Dashboard';
+
+
 
 export const Main = () => {
   //state to keep the task data
@@ -22,7 +25,7 @@ export const Main = () => {
     <>
       <article className="article-style">
         <header>
-          <h1>DASHBOARD</h1>
+          <h1>TASKBOARD <DashboardIcon fontSize="medium"/> </h1>
         </header>
       </article>
 
@@ -30,7 +33,7 @@ export const Main = () => {
         <div>
           {shownPage === PageTypeEnum.list && (
             <>
-              <h1 style={{ marginBottom: "16px", marginTop: "40px" }}>
+              <h1 className="tasklist-text-style" style={{ marginBottom: "16px", marginTop: "40px"}}>
                 Task List <ListIcon />
               </h1>
               <Button
