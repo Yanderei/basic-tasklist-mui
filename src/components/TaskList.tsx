@@ -74,9 +74,12 @@ export const TaskList = (props: Props) => {
           <TableHead sx={{ backgroundColor: "mycolor.light" }}>
             <TableRow>
               <TableCell align="left">Title&nbsp;</TableCell>
+              <TableCell align="left">Assignee&nbsp;</TableCell>
               <TableCell align="left">Description&nbsp;</TableCell>
               <TableCell align="left">Due Date&nbsp;</TableCell>
-              <TableCell align="left">Status&nbsp;</TableCell>
+              <TableCell align="center">Priority Level</TableCell>
+              <TableCell align="center">Status&nbsp;</TableCell>
+              <TableCell align="left">Notes&nbsp;</TableCell>
               <TableCell align="center">Actions&nbsp;</TableCell>
             </TableRow>
           </TableHead>
@@ -87,11 +90,14 @@ export const TaskList = (props: Props) => {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell align="left">{task.title} </TableCell>
+                <TableCell align="left">{task.assignee}</TableCell>
                 <TableCell align="left">{task.description}</TableCell>
                 <TableCell align="left">
                   {format(task.due_date, "yyyy-MM-dd HH:mm:ss")}
                 </TableCell>
-                <TableCell align="left">{task.status}</TableCell>
+                <TableCell align="center">{task.prio_level}</TableCell>
+                <TableCell align="center">{task.status}</TableCell>
+                <TableCell align="left">{task.notes}</TableCell>
                 <TableCell align="center">
                   <div>
                     <IconButton

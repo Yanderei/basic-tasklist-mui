@@ -11,6 +11,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import AddIcon from "@mui/icons-material/Add";
+import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 import {
   alpha,
   createTheme,
@@ -22,6 +23,7 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
+  IconButton,
   InputLabel,
   MenuItem,
   NativeSelect,
@@ -29,6 +31,8 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import "./Main.style.css";
+import { TaskInterface } from "./Task.type";
+import { AnyAaaaRecord } from "dns";
 
 function Copyright(props: any) {
   return (
@@ -92,20 +96,63 @@ const commonStyles = {
   border: 0,
 };
 
-export default function AddTask() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-  };
+type Props = {
+  onBackButtonClicked: () => void;
+  handleSubmitFunction: (data: TaskInterface) => void;
+};
+
+export default function AddTask(props: Props) {
+  const { onBackButtonClicked, handleSubmitFunction } = props;
 
   const [prio, setPrio] = React.useState("");
+  const [titleData, setTitleData] = React.useState("");
+  const [desc, setDesc] = React.useState("");
+  const [assigneeData, setAssigneeData] = React.useState("");
+  const [duedate, setDuedate] = React.useState("");
+  const [statusLevel, setStatusLevel] = React.useState("");
+  const [notesData, setNotesData] = React.useState("");
 
-  const handleChange = (event: SelectChangeEvent) => {
+  const handleChangePrio = (event: SelectChangeEvent) => {
     setPrio(event.target.value as string);
+  };
+
+  const handleChangeStatus = (event: SelectChangeEvent) => {
+    setStatusLevel(event.target.value as string);
+  };
+
+  const onChangeTitle = (e: any) => {
+    setTitleData(e.target.value);
+  };
+  const onChangeDesc = (e: any) => {
+    setDesc(e.target.value);
+  };
+  const onChangeAssignee = (e: any) => {
+    setAssigneeData(e.target.value);
+  };
+  const onChangeDate = (e: any) => {
+    setDuedate(e.target.value);
+  };
+
+  const onChangeNotes = (e: any) => {
+    setNotesData(e.target.value);
+  };
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    const dueDate = duedate ? new Date(duedate) : new Date();
+    const data: TaskInterface = {
+      id: new Date().toJSON().toString(),
+      title: titleData,
+      description: desc,
+      assignee: assigneeData,
+      due_date: dueDate,
+      status: statusLevel,
+      prio_level: prio,
+      notes: notesData,
+    };
+
+    handleSubmitFunction(data);
+    onBackButtonClicked();
   };
 
   return (
@@ -141,12 +188,14 @@ export default function AddTask() {
             component="form"
             noValidate
             onSubmit={handleSubmit}
+            textAlign={"center"}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2} mt={2}>
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
                   <TextField
+                    onChange={onChangeTitle}
                     autoComplete="task-title"
                     name="taskTitle"
                     required
@@ -161,6 +210,7 @@ export default function AddTask() {
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
                   <TextField
+                    onChange={onChangeAssignee}
                     required
                     id="assignee"
                     label="Assignee"
@@ -174,6 +224,7 @@ export default function AddTask() {
               <Grid item xs={12}>
                 <FormControl fullWidth>
                   <TextField
+                    onChange={onChangeDesc}
                     required
                     sx={{ mt: 3, mb: 3 }}
                     fullWidth
@@ -188,6 +239,7 @@ export default function AddTask() {
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
                   <TextField
+                    onChange={onChangeDate}
                     required
                     id="date"
                     name="date"
@@ -209,15 +261,15 @@ export default function AddTask() {
                     id="prio-level"
                     value={prio}
                     label="Priority Level"
-                    onChange={handleChange}
+                    onChange={handleChangePrio}
                     //displayEmpty
                   >
-                    <MenuItem value="">
+                    <MenuItem value="n/a">
                       <em>N/A</em>
                     </MenuItem>
-                    <MenuItem value={1}>Ten</MenuItem>
-                    <MenuItem value={2}>Twenty</MenuItem>
-                    <MenuItem value={3}>Thirty</MenuItem>
+                    <MenuItem value={"Ten"}>Ten</MenuItem>
+                    <MenuItem value={"Twenty"}>Twenty</MenuItem>
+                    <MenuItem value={"Thirty"}>Thirty</MenuItem>
                   </Select>
                   <FormHelperText>Priority Level of Task</FormHelperText>
                 </FormControl>
@@ -231,18 +283,18 @@ export default function AddTask() {
                     notched
                     labelId="status-level-label"
                     id="status-level"
-                    value={prio}
+                    value={statusLevel}
                     label="Status"
-                    onChange={handleChange}
-                    //displayEmpty
+                    onChange={handleChangeStatus}
+                    displayEmpty
                   >
-                    <MenuItem value={0}>
+                    <MenuItem value={"n/a"}>
                       <em>N/A</em>
                     </MenuItem>
-                    <MenuItem value={4}>Pending</MenuItem>
-                    <MenuItem value={5}>In Progress</MenuItem>
-                    <MenuItem value={6}>Completed</MenuItem>
-                    <MenuItem value={7}>Cancelled</MenuItem>
+                    <MenuItem value={"Pending"}>Pending</MenuItem>
+                    <MenuItem value={"In Progress"}>In Progress</MenuItem>
+                    <MenuItem value={"Completed"}>Completed</MenuItem>
+                    <MenuItem value={"Cancelled"}>Cancelled</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -250,6 +302,7 @@ export default function AddTask() {
                 <FormControl fullWidth>
                   <TextField
                     sx={{ mt: 3, mb: 3 }}
+                    onChange={onChangeNotes}
                     id="outlined-multiline-static"
                     label="Notes"
                     multiline
@@ -265,10 +318,21 @@ export default function AddTask() {
               fullWidth
               color="mycolor"
               variant="contained"
+              value="Add Task"
               sx={{ mt: 3, mb: 2 }}
+              startIcon={<AddIcon />}
             >
-              <AddIcon /> Add
+              Add
             </Button>
+            <IconButton
+              sx={{ mb: 2 }}
+              type="button"
+              color="mycolor"
+              size="small"
+              onClick={onBackButtonClicked}
+            >
+              <ArrowCircleLeftOutlinedIcon fontSize="large" />
+            </IconButton>
           </Box>
         </Box>
         <Copyright sx={{ mt: 5 }} />

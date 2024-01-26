@@ -21,6 +21,15 @@ export const Main = () => {
     setShownPage(PageTypeEnum.add);
   };
 
+  const showListPage = () => {
+    setShownPage(PageTypeEnum.list);
+  }
+
+  const handleAddTask = (data: TaskInterface) =>{
+    //append data
+    setTaskList([...taskList, data])
+  }
+
   return (
     <>
       <article className="article-style">
@@ -50,7 +59,7 @@ export const Main = () => {
           )}
         </div>
 
-        {shownPage === PageTypeEnum.add && <AddTask />}
+        {shownPage === PageTypeEnum.add && <AddTask onBackButtonClicked={showListPage} handleSubmitFunction={handleAddTask}/>}
       </section>
     </>
   );
