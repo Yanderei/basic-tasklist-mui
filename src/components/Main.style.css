@@ -1,0 +1,19 @@
+.article-style{
+    background-color: palevioletred;
+    color:azure;
+    border: 20px solid transparent;
+    text-align: center;
+    font-size: x-large;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.content-section{
+    margin-right: 10%;
+    margin-left: 10%;
+    margin-top: 15px;
+}
+
+.table-color {
+    background-color: 'pink';
+    font: "white";
+}
