@@ -9,6 +9,7 @@ import { blue, green, lightGreen } from "@mui/material/colors";
 import { Button } from "@mui/material";
 import AddTask from "./AddTask";
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import EditTask from "./EditTask";
 
 
 
@@ -16,6 +17,7 @@ export const Main = () => {
   //state to keep the task data
   const [taskList, setTaskList] = useState(dummyTaskList as TaskInterface[]);
   const [shownPage, setShownPage] = useState(PageTypeEnum.list);
+  const [dataToEdit, setDataToEdit] = useState({} as TaskInterface);
 
   const onAddTask = () => {
     setShownPage(PageTypeEnum.add);
@@ -29,6 +31,28 @@ export const Main = () => {
     //append data
     setTaskList([...taskList, data])
   }
+
+  function handleDeleteTask(data: TaskInterface) {
+    const indexDelete = taskList.indexOf(data)
+    const newData = taskList.filter((_, i) => i !== indexDelete)
+    setTaskList(newData)
+    
+  
+  
+  }
+
+  function editTaskData(data: TaskInterface): void {
+    setDataToEdit(data);
+    setShownPage(PageTypeEnum.edit);
+  }
+
+  function updateTaskData(data: TaskInterface): void {
+    const filteredData=  taskList.filter((item)=> item.id === data.id ? data : item )[0]; //need only first record
+    const indexEdit = taskList.indexOf(filteredData)
+    const tempData = [...taskList]
+    tempData[indexEdit]= data;
+    setTaskList(tempData);
+}
 
   return (
     <>
@@ -54,12 +78,13 @@ export const Main = () => {
               >
                 Add Task
               </Button>
-              <TaskList list={taskList} />
+              <TaskList list={taskList} onDeleteClicked={handleDeleteTask} onEditTask={editTaskData}/>
             </>
           )}
         </div>
 
         {shownPage === PageTypeEnum.add && <AddTask onBackButtonClicked={showListPage} handleSubmitFunction={handleAddTask}/>}
+        {shownPage === PageTypeEnum.edit && <EditTask onBackButtonClicked={showListPage} handleUpdateFunction={updateTaskData} taskData={dataToEdit} />}
       </section>
     </>
   );

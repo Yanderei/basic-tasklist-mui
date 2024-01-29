@@ -10,8 +10,7 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import AddIcon from "@mui/icons-material/Add";
-import { v4 as uuidv4 } from 'uuid';
+import EditNoteIcon from "@mui/icons-material/EditNote";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 import {
   alpha,
@@ -19,7 +18,7 @@ import {
   getContrastRatio,
   ThemeProvider,
 } from "@mui/material/styles";
-import AddTaskIcon from "@mui/icons-material/AddTask";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   FormControl,
   FormHelperText,
@@ -33,7 +32,6 @@ import {
 } from "@mui/material";
 import "./Main.style.css";
 import { PrioLevels, StatusLevels, TaskInterface } from "./Task.type";
-
 
 function Copyright(props: any) {
   return (
@@ -99,26 +97,27 @@ const commonStyles = {
 
 type Props = {
   onBackButtonClicked: () => void;
-  handleSubmitFunction: (data: TaskInterface) => void;
+  handleUpdateFunction: (data: TaskInterface) => void;
+  taskData: TaskInterface;
 };
 
-export default function AddTask(props: Props) {
-  const { onBackButtonClicked, handleSubmitFunction } = props;
+export default function EditTask(props: Props) {
+  const { onBackButtonClicked, handleUpdateFunction, taskData } = props;
 
-  const [prio, setPrio] = React.useState(PrioLevels.NA);
-  const [titleData, setTitleData] = React.useState("");
-  const [desc, setDesc] = React.useState("");
-  const [assigneeData, setAssigneeData] = React.useState("");
-  const [duedate, setDuedate] = React.useState<Date>();
-  const [statusLevel, setStatusLevel] = React.useState(StatusLevels.NA);
-  const [notesData, setNotesData] = React.useState("");
+  const [prio, setPrio] = React.useState(taskData.prio_level);
+  const [titleData, setTitleData] = React.useState(taskData.title);
+  const [desc, setDesc] = React.useState(taskData.description);
+  const [assigneeData, setAssigneeData] = React.useState(taskData.assignee);
+  const [duedate, setDuedate] = React.useState(taskData.due_date);
+  const [statusLevel, setStatusLevel] = React.useState(taskData.status);
+  const [notesData, setNotesData] = React.useState(taskData.notes);
 
   const handleChangePrio = (event: SelectChangeEvent) => {
     setPrio(event.target.value as PrioLevels);
   };
 
   const handleChangeStatus = (event: SelectChangeEvent) => {
-    setStatusLevel(event.target.value as StatusLevels );
+    setStatusLevel(event.target.value as StatusLevels);
   };
 
   const onChangeTitle = (e: any) => {
@@ -140,9 +139,9 @@ export default function AddTask(props: Props) {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    const dueDate = duedate ? duedate : new Date();
-    const data: TaskInterface = {
-      id: uuidv4(),
+    const dueDate = duedate ? duedate: new Date();
+    const updatedData: TaskInterface = {
+      id: taskData.id,
       title: titleData,
       description: desc,
       assignee: assigneeData,
@@ -151,12 +150,11 @@ export default function AddTask(props: Props) {
       prio_level: prio,
       notes: notesData,
     };
-    console.log(dueDate);
-    handleSubmitFunction(data);
+
+    handleUpdateFunction(updatedData);
     onBackButtonClicked();
   };
 
-  
   return (
     <ThemeProvider theme={theme}>
       <Container
@@ -181,10 +179,10 @@ export default function AddTask(props: Props) {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: "green", mt: 5 }}>
-            <AddTaskIcon />
+            <EditNoteIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Add Task
+            Edit Task
           </Typography>
           <Box
             component="form"
@@ -203,6 +201,7 @@ export default function AddTask(props: Props) {
                     required
                     id="taskTitle"
                     label="Task"
+                    defaultValue={taskData.title}
                     autoFocus
                     sx={{ mt: 1 }}
                     InputLabelProps={{ shrink: true }}
@@ -218,6 +217,7 @@ export default function AddTask(props: Props) {
                     label="Assignee"
                     name="assignee"
                     autoComplete="assignee-name"
+                    defaultValue={taskData.assignee}
                     sx={{ mt: 1 }}
                     InputLabelProps={{ shrink: true }}
                   />
@@ -234,6 +234,7 @@ export default function AddTask(props: Props) {
                     label="Description"
                     name="description"
                     autoComplete="description"
+                    defaultValue={taskData.description}
                     InputLabelProps={{ shrink: true }}
                   />
                 </FormControl>
@@ -247,6 +248,7 @@ export default function AddTask(props: Props) {
                     name="date"
                     type="datetime-local"
                     label="Date"
+                    defaultValue={taskData.due_date}
                     autoComplete="date"
                     InputLabelProps={{ shrink: true }}
                   />
@@ -264,6 +266,7 @@ export default function AddTask(props: Props) {
                     value={prio}
                     label="Priority Level"
                     onChange={handleChangePrio}
+                    displayEmpty
                     //displayEmpty
                   >
                     <MenuItem value={PrioLevels.NA}>
@@ -294,9 +297,15 @@ export default function AddTask(props: Props) {
                       <em>N/A</em>
                     </MenuItem>
                     <MenuItem value={StatusLevels.PENDING}>Pending</MenuItem>
-                    <MenuItem value={StatusLevels.PROGRESS}>In Progress</MenuItem>
-                    <MenuItem value={StatusLevels.COMPLETED}>Completed</MenuItem>
-                    <MenuItem value={StatusLevels.CANCELLED}>Cancelled</MenuItem>
+                    <MenuItem value={StatusLevels.PROGRESS}>
+                      In Progress
+                    </MenuItem>
+                    <MenuItem value={StatusLevels.COMPLETED}>
+                      Completed
+                    </MenuItem>
+                    <MenuItem value={StatusLevels.CANCELLED}>
+                      Cancelled
+                    </MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -309,7 +318,7 @@ export default function AddTask(props: Props) {
                     label="Notes"
                     multiline
                     rows={3}
-                    defaultValue=""
+                    defaultValue={taskData.notes}
                     InputLabelProps={{ shrink: true }}
                   />
                 </FormControl>
@@ -320,11 +329,11 @@ export default function AddTask(props: Props) {
               fullWidth
               color="mycolor"
               variant="contained"
-              value="Add Task"
+              value="Edit Task"
               sx={{ mt: 3, mb: 2 }}
-              startIcon={<AddIcon />}
+              startIcon={<EditIcon />}
             >
-              Add
+              Update
             </Button>
             <IconButton
               sx={{ mb: 2 }}

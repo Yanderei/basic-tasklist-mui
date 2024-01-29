@@ -12,7 +12,7 @@ import PreviewIcon from "@mui/icons-material/Preview";
 import EditIcon from "@mui/icons-material/Edit";
 import Button from "@mui/material/Button";
 import { TaskInterface } from "./Task.type";
-import { format } from "date-fns";
+;
 import { blue, green, pink, red } from "@mui/material/colors";
 import "./Main.style.css";
 import {
@@ -22,6 +22,10 @@ import {
   createTheme,
   getContrastRatio,
 } from "@mui/material";
+import ViewTaskModal from "./ViewTaskModal";
+import { useState } from "react";
+import { format } from "date-fns";
+
 
 const defaultTheme = createTheme();
 
@@ -57,12 +61,26 @@ const theme = createTheme({
   },
 });
 
-
 type Props = {
   list: TaskInterface[];
+  onDeleteClicked: (data: TaskInterface) => void;
+  onEditTask: (data:TaskInterface) => void ;
 };
 export const TaskList = (props: Props) => {
-  const { list } = props;
+  const { list, onDeleteClicked, onEditTask } = props;
+
+  console.log(list);
+
+  const [modalState, setModalState] = useState(false);
+  const [modalData, setModalData] = useState(null as TaskInterface | null);
+
+  function viewTask(): void {
+    //toggle
+    //setModalData(data);
+    setModalState(!modalState);
+  }
+
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -93,7 +111,7 @@ export const TaskList = (props: Props) => {
                 <TableCell align="left">{task.assignee}</TableCell>
                 <TableCell align="left">{task.description}</TableCell>
                 <TableCell align="left">
-                  {format(task.due_date, "yyyy-MM-dd HH:mm:ss")}
+                  {format(task.due_date, "yyyy-MM-dd")}
                 </TableCell>
                 <TableCell align="center">{task.prio_level}</TableCell>
                 <TableCell align="center">{task.status}</TableCell>
@@ -104,13 +122,19 @@ export const TaskList = (props: Props) => {
                       //variant="outlined"
                       color="primary"
                       size="small"
+                      onClick={() => {
+                        setModalData(task);
+                        viewTask();
+                      }}
                     >
-                    <PreviewIcon sx={{ color: blue[500] }} />
+                      <PreviewIcon sx={{ color: blue[500] }} />
                     </IconButton>
                     <IconButton
                       //variant="outlined"
                       color="secondary"
-                      size="small">
+                      size="small"
+                      onClick={()=> onEditTask(task)}
+                    >
                       <EditIcon sx={{ color: "purple"[500] }} />
                     </IconButton>
 
@@ -118,7 +142,7 @@ export const TaskList = (props: Props) => {
                       //variant="outlined"
                       color="error"
                       size="small"
-                      
+                      onClick={() => onDeleteClicked(task)}
                     >
                       <DeleteIcon sx={{ color: red[500] }} />
                     </IconButton>
@@ -129,6 +153,14 @@ export const TaskList = (props: Props) => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {modalState && modalData !== null && (
+        <ViewTaskModal
+          modalState
+          setModalState={viewTask}
+          modalData={modalData}
+        />
+      )}
     </ThemeProvider>
   );
 };
