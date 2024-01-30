@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Main.style.css";
 import { PageTypeEnum, TaskInterface, dummyTaskList } from "./Task.type";
 import { TaskList } from "./TaskList";
@@ -15,9 +15,18 @@ import EditTask from "./EditTask";
 
 export const Main = () => {
   //state to keep the task data
-  const [taskList, setTaskList] = useState(dummyTaskList as TaskInterface[]);
+  const [taskList, setTaskList] = useState([] as TaskInterface[]);
   const [shownPage, setShownPage] = useState(PageTypeEnum.list);
   const [dataToEdit, setDataToEdit] = useState({} as TaskInterface);
+
+
+  //should load only once when main loads for the first time
+  useEffect(()=>{
+   const listString = window.localStorage.getItem("TaskList")
+   if(listString){
+    _setTaskList(JSON.parse(listString))
+   }
+  },[])
 
   const onAddTask = () => {
     setShownPage(PageTypeEnum.add);
@@ -29,13 +38,13 @@ export const Main = () => {
 
   const handleAddTask = (data: TaskInterface) =>{
     //append data
-    setTaskList([...taskList, data])
+    _setTaskList([...taskList, data])
   }
 
   function handleDeleteTask(data: TaskInterface) {
     const indexDelete = taskList.indexOf(data)
     const newData = taskList.filter((_, i) => i !== indexDelete)
-    setTaskList(newData)
+    _setTaskList(newData)
     
   
   
@@ -47,12 +56,17 @@ export const Main = () => {
   }
 
   function updateTaskData(data: TaskInterface): void {
-    const filteredData=  taskList.filter((item)=> item.id === data.id ? data : item )[0]; //need only first record
+    const filteredData=  taskList.filter((item)=> item.id === data.id )[0]; //need only first record
     const indexEdit = taskList.indexOf(filteredData)
     const tempData = [...taskList]
     tempData[indexEdit]= data;
-    setTaskList(tempData);
+    _setTaskList(tempData);
 }
+
+  const _setTaskList = (list:  TaskInterface[])=>{
+     setTaskList(list)
+     window.localStorage.setItem("TaskList", JSON.stringify(list))
+  }
 
   return (
     <>
