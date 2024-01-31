@@ -10,9 +10,7 @@ import Paper from "@mui/material/Paper";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
 import EditIcon from "@mui/icons-material/Edit";
-import Button from "@mui/material/Button";
 import { TaskInterface } from "./Task.type";
-;
 import { blue, green, pink, red } from "@mui/material/colors";
 import "./Main.style.css";
 import {
@@ -25,7 +23,6 @@ import {
 import ViewTaskModal from "./ViewTaskModal";
 import { useState } from "react";
 import { format } from "date-fns";
-
 
 const defaultTheme = createTheme();
 
@@ -64,7 +61,7 @@ const theme = createTheme({
 type Props = {
   list: TaskInterface[];
   onDeleteClicked: (data: TaskInterface) => void;
-  onEditTask: (data:TaskInterface) => void ;
+  onEditTask: (data: TaskInterface) => void;
 };
 export const TaskList = (props: Props) => {
   const { list, onDeleteClicked, onEditTask } = props;
@@ -79,8 +76,6 @@ export const TaskList = (props: Props) => {
     //setModalData(data);
     setModalState(!modalState);
   }
-
-
 
   return (
     <ThemeProvider theme={theme}>
@@ -108,12 +103,12 @@ export const TaskList = (props: Props) => {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell align="left">{task.title} </TableCell>
-                <TableCell align="left">{task.assignee}</TableCell>
+                <TableCell align="left">{task.assignee.displayName}</TableCell>
                 <TableCell align="left">{task.description}</TableCell>
                 <TableCell align="left">
-                  {format(task.due_date, "yyyy-MM-dd")}
+                  {format(task.dueDate, "yyyy-MM-dd")}
                 </TableCell>
-                <TableCell align="center">{task.prio_level}</TableCell>
+                <TableCell align="center">{task.priorityLevel}</TableCell>
                 <TableCell align="center">{task.status}</TableCell>
                 <TableCell align="left">{task.notes}</TableCell>
                 <TableCell align="center">
@@ -133,7 +128,7 @@ export const TaskList = (props: Props) => {
                       //variant="outlined"
                       color="secondary"
                       size="small"
-                      onClick={()=> onEditTask(task)}
+                      onClick={() => onEditTask(task)}
                     >
                       <EditIcon sx={{ color: "purple"[500] }} />
                     </IconButton>

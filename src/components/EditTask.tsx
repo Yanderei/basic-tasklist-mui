@@ -32,6 +32,7 @@ import {
 } from "@mui/material";
 import "./Main.style.css";
 import { PrioLevels, StatusLevels, TaskInterface } from "./Task.type";
+import { v4 as uuidv4 } from "uuid";
 
 function Copyright(props: any) {
   return (
@@ -99,16 +100,29 @@ type Props = {
   onBackButtonClicked: () => void;
   handleUpdateFunction: (data: TaskInterface) => void;
   taskData: TaskInterface;
+  list: TaskInterface[];
 };
 
-export default function EditTask(props: Props) {
-  const { onBackButtonClicked, handleUpdateFunction, taskData } = props;
+export function findAssigneeByName(
+  list: TaskInterface[],
+  assigneeName: string
+) {
+  for (const task of list) {
+    if (task.assignee.displayName === assigneeName) {
+      return task.assignee;
+    }
+  }
+  return null;
+}
 
-  const [prio, setPrio] = React.useState(taskData.prio_level);
+export default function EditTask(props: Props) {
+  const { list, onBackButtonClicked, handleUpdateFunction, taskData } = props;
+
+  const [prio, setPrio] = React.useState(taskData.priorityLevel);
   const [titleData, setTitleData] = React.useState(taskData.title);
   const [desc, setDesc] = React.useState(taskData.description);
   const [assigneeData, setAssigneeData] = React.useState(taskData.assignee);
-  const [duedate, setDuedate] = React.useState(taskData.due_date);
+  const [duedate, setDuedate] = React.useState(taskData.dueDate);
   const [statusLevel, setStatusLevel] = React.useState(taskData.status);
   const [notesData, setNotesData] = React.useState(taskData.notes);
 
@@ -126,8 +140,22 @@ export default function EditTask(props: Props) {
   const onChangeDesc = (e: any) => {
     setDesc(e.target.value);
   };
+
   const onChangeAssignee = (e: any) => {
-    setAssigneeData(e.target.value);
+    const assigneeName = e.target.value;
+
+    let assignee = findAssigneeByName(list, assigneeName);
+
+    if (assignee) {
+      setAssigneeData(assignee);
+    } else {
+      console.log("No assignee found with the name:", assigneeName);
+      assignee = {
+        userId: uuidv4(),
+        displayName: assigneeName,
+      };
+      setAssigneeData(assignee);
+    }
   };
   const onChangeDate = (e: any) => {
     setDuedate(e.target.value);
@@ -139,15 +167,15 @@ export default function EditTask(props: Props) {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    const dueDate = duedate ? duedate: new Date();
+    const dueDate = duedate ? duedate : new Date();
     const updatedData: TaskInterface = {
       id: taskData.id,
       title: titleData,
       description: desc,
       assignee: assigneeData,
-      due_date: dueDate,
+      dueDate: dueDate,
       status: statusLevel,
-      prio_level: prio,
+      priorityLevel: prio,
       notes: notesData,
     };
 
@@ -217,7 +245,7 @@ export default function EditTask(props: Props) {
                     label="Assignee"
                     name="assignee"
                     autoComplete="assignee-name"
-                    defaultValue={taskData.assignee}
+                    defaultValue={taskData.assignee.displayName}
                     sx={{ mt: 1 }}
                     InputLabelProps={{ shrink: true }}
                   />
@@ -248,7 +276,7 @@ export default function EditTask(props: Props) {
                     name="date"
                     type="datetime-local"
                     label="Date"
-                    defaultValue={taskData.due_date}
+                    defaultValue={taskData.dueDate}
                     autoComplete="date"
                     InputLabelProps={{ shrink: true }}
                   />

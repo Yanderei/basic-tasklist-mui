@@ -1,29 +1,34 @@
-import { useId } from "react";
+
 
 export enum StatusLevels{
     NA = "N/A",
-    PENDING = "Pending",
-    PROGRESS = "In Progress", 
-    COMPLETED = "Completed",
-    CANCELLED = "Cancelled"
+    PENDING = "pending",
+    PROGRESS = "in progress", 
+    COMPLETED = "completed",
+    CANCELLED = "cancelled"
 }
 
 export enum PrioLevels{
     NA = "N/A",
-    HIGH = "High",
-    MEDIUM = "Medium",
-    LOW = "Low"
+    HIGH = "high",
+    MEDIUM = "medium",
+    LOW = "low"
 }
 
+
+export interface AssigneeInterface{
+    userId:string;
+    displayName:string;
+}
 
 export interface TaskInterface{
     id: string;
     title:string;
     description: string;
-    due_date: Date;
+    dueDate: Date;
     status: StatusLevels,
-    assignee: string;
-    prio_level: PrioLevels,
+    assignee: AssigneeInterface;
+    priorityLevel: PrioLevels,
     notes: string;
 
 }
@@ -32,10 +37,13 @@ export const dummyTaskList : TaskInterface[] =[{
     id: "3f5b4d60-2f96-4c0a-b65a-61a3bfeef0s5",
     title: "Do Coding Interview",
     description: "Interview task for Medial Health",
-    due_date: new Date(),
+    dueDate: new Date(),
     status: StatusLevels.PENDING,
-    assignee: "Rei",
-    prio_level: PrioLevels.LOW,
+    assignee: {
+        userId: "1",
+        displayName:"John Doe"
+    },
+    priorityLevel: PrioLevels.LOW,
     notes: "test note",
 }]
 

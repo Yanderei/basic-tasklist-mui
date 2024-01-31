@@ -11,7 +11,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import AddIcon from "@mui/icons-material/Add";
-import { v4 as uuidv4 } from 'uuid';
+import { findAssigneeByName } from "./EditTask";
+import { v4 as uuidv4 } from "uuid";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 import {
   alpha,
@@ -32,8 +33,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import "./Main.style.css";
-import { PrioLevels, StatusLevels, TaskInterface } from "./Task.type";
-
+import { AssigneeInterface, PrioLevels, StatusLevels, TaskInterface } from "./Task.type";
 
 function Copyright(props: any) {
   return (
@@ -100,15 +100,16 @@ const commonStyles = {
 type Props = {
   onBackButtonClicked: () => void;
   handleSubmitFunction: (data: TaskInterface) => void;
+  list: TaskInterface[];
 };
 
 export default function AddTask(props: Props) {
-  const { onBackButtonClicked, handleSubmitFunction } = props;
+  const { list, onBackButtonClicked, handleSubmitFunction } = props;
 
   const [prio, setPrio] = React.useState(PrioLevels.NA);
   const [titleData, setTitleData] = React.useState("");
   const [desc, setDesc] = React.useState("");
-  const [assigneeData, setAssigneeData] = React.useState("");
+  const [assigneeData, setAssigneeData] = React.useState<AssigneeInterface>({userId:"", displayName:""});
   const [duedate, setDuedate] = React.useState<Date>();
   const [statusLevel, setStatusLevel] = React.useState(StatusLevels.NA);
   const [notesData, setNotesData] = React.useState("");
@@ -118,7 +119,7 @@ export default function AddTask(props: Props) {
   };
 
   const handleChangeStatus = (event: SelectChangeEvent) => {
-    setStatusLevel(event.target.value as StatusLevels );
+    setStatusLevel(event.target.value as StatusLevels);
   };
 
   const onChangeTitle = (e: any) => {
@@ -127,9 +128,24 @@ export default function AddTask(props: Props) {
   const onChangeDesc = (e: any) => {
     setDesc(e.target.value);
   };
+
   const onChangeAssignee = (e: any) => {
-    setAssigneeData(e.target.value);
+    const assigneeName = e.target.value;
+
+    let assignee = findAssigneeByName(list, assigneeName);
+
+    if (assignee) {
+      setAssigneeData(assignee);
+    } else {
+      console.log("No assignee found with the name:", assigneeName);
+      assignee = {
+        userId: uuidv4(),
+        displayName: assigneeName,
+      };
+      setAssigneeData(assignee);
+    }
   };
+
   const onChangeDate = (e: any) => {
     setDuedate(e.target.value);
   };
@@ -146,9 +162,9 @@ export default function AddTask(props: Props) {
       title: titleData,
       description: desc,
       assignee: assigneeData,
-      due_date: dueDate,
+      dueDate: dueDate,
       status: statusLevel,
-      prio_level: prio,
+      priorityLevel: prio,
       notes: notesData,
     };
     console.log(dueDate);
@@ -156,7 +172,6 @@ export default function AddTask(props: Props) {
     onBackButtonClicked();
   };
 
-  
   return (
     <ThemeProvider theme={theme}>
       <Container
@@ -294,9 +309,15 @@ export default function AddTask(props: Props) {
                       <em>N/A</em>
                     </MenuItem>
                     <MenuItem value={StatusLevels.PENDING}>Pending</MenuItem>
-                    <MenuItem value={StatusLevels.PROGRESS}>In Progress</MenuItem>
-                    <MenuItem value={StatusLevels.COMPLETED}>Completed</MenuItem>
-                    <MenuItem value={StatusLevels.CANCELLED}>Cancelled</MenuItem>
+                    <MenuItem value={StatusLevels.PROGRESS}>
+                      In Progress
+                    </MenuItem>
+                    <MenuItem value={StatusLevels.COMPLETED}>
+                      Completed
+                    </MenuItem>
+                    <MenuItem value={StatusLevels.CANCELLED}>
+                      Cancelled
+                    </MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
