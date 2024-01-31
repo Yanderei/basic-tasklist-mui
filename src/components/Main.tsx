@@ -25,11 +25,11 @@ export const Main = (props: Props) => {
 
   //should load only once when main loads for the first time
   useEffect(() => {
-    _setTaskList(data);
-
     const listString = window.localStorage.getItem("TaskList");
     if (listString) {
       _setTaskList(JSON.parse(listString));
+    } else {
+      _setTaskList(data);
     }
   }, []);
 
@@ -112,7 +112,7 @@ export const Main = (props: Props) => {
           <AddTask
             onBackButtonClicked={showListPage}
             handleSubmitFunction={handleAddTask}
-            list = {taskList}
+            list={taskList}
           />
         )}
         {shownPage === PageTypeEnum.edit && (
